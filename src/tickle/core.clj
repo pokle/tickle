@@ -31,7 +31,7 @@
 (defn valid? [spec data]
   (= :valid (spec data)))
 
-(defn or [& specs]
+(defn either [& specs]
   (fn [data]
     (if (some #(valid? % data) specs)
       :valid
