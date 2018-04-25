@@ -28,14 +28,14 @@
 (defn valid-result? [spec-result]
   (= :valid spec-result))
 
+(defn valid? [spec data]
+  (= :valid (spec data)))
+
 (defn or [& specs]
   (fn [data]
     (if (some #(valid? % data) specs)
       :valid
       {:error (str "None of the specs (" (String/join "," (map demangle specs))  ") matched " (show data))})))
-
-(defn valid? [spec data]
-  (= :valid (spec data)))
 
 (defn explain [spec data]
   (let [result (spec data)]

@@ -1,6 +1,6 @@
 (ns tickle.core-test
   (:require [midje.sweet :refer :all]
-            [tickle.core :refer [string number] :as t]))
+            [tickle.core :refer [string number valid? explain] :as t]))
 
 (facts "string"
        (valid? string "moo") => true
