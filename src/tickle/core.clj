@@ -3,27 +3,37 @@
 (defn demangle [func]
   (clojure.string/replace (second (re-find #"^.+\$(.+)\@.+$" (str func)))
                           #"\_QMARK\_" "?"))
+(defn show [data]
+  (str (pr-str (type data)) ": " (pr-str data)))
 
-(defn predicate->spec [& {:keys [predicate error-fn]
-                          :or {error-fn (fn [data] (str data " is not " (demangle predicate)))}}]
+(defn predicate->spec
+  [& {:keys [predicate name error-fn]
+      :or {name (demangle predicate)
+           error-fn (fn [data] (str data " is not " (demangle predicate)))}}]
+  ^{:name name}
   (fn [data]
     (if (predicate data)
       :valid
       {:error (error-fn data)})))
 
-(defn show [data]
-  (str (pr-str (type data)) ": " (pr-str data)))
+(defn string [data]
+  (if (string? data)
+    :valid
+    {:error (str "Not a string: " (show data))}))
 
-(def string
-  (predicate->spec
-   :predicate string?
-   :error-fn (fn [data] (str (show data) " is not a string"))))
+(defn number [data]
+  (if (number? data)
+    :valid
+    {:error (str "Not a number: " (show data))}))
+(defn valid-result? [spec-result]
+  (= :valid spec-result))
 
-(def number
-  (predicate->spec
-    :predicate number?
-    :error-fn (fn [data] (str (show data) " is not a number"))))
- 
+(defn or [& specs]
+  (fn [data]
+    (if (some #(valid? % data) specs)
+      :valid
+      {:error (str "None of the specs (" (String/join "," (map demangle specs))  ") matched " (show data))})))
+
 (defn valid? [spec data]
   (= :valid (spec data)))
 
