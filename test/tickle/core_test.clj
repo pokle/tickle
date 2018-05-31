@@ -24,6 +24,7 @@
 (facts "either"
        (valid? (either number string) "sss") => true
        (valid? (either number string) 12345) => true
+       (valid? (either number string (regexp #"meh")) "meh") => true
        (valid? (either number string) true) => false
        (explain (either number string) true) => "None of the specs (number,string) matched java.lang.Boolean: true")
 
